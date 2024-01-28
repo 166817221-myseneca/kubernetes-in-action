@@ -15,22 +15,23 @@ jobs:
 
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
+      with:
+        region: us-east-1
 
     - name: Build, tag, and push Docker image
       run: |
-        # Define the ECR Registry URL from the secret and the repository name
         ECR_REGISTRY_URL="${{ secrets.ECR_REGISTRY_URL }}"
-        REPO_NAME="clo835-week4"
         IMAGE_TAG="v2" # Set your image tag
 
-        # Navigate to your Dockerfile directory if it's not in the root
-        # cd path/to/your/dockerfile/
-
         # Build the Docker image
-        docker build -t $REPO_NAME:$IMAGE_TAG .
+        docker build -t clo835-week4:$IMAGE_TAG .
 
         # Tag the image with the full ECR path
-        docker tag $REPO_NAME:$IMAGE_TAG $ECR_REGISTRY_URL/$REPO_NAME:$IMAGE_TAG
+        docker tag clo835-week4:$IMAGE_TAG $ECR_REGISTRY_URL/clo835-week4:$IMAGE_TAG
 
         # Push the image to ECR
-        docker push $ECR_REGISTRY_URL/$REPO_NAME:$IMAGE_TAG
+        docker push $ECR_REGISTRY_URL/clo835-week4:$IMAGE_TAG
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }} # This line is optional and should only be used if you are using temporary credentials
